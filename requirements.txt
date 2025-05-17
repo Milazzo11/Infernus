@@ -1,0 +1,14 @@
+dash
+discord.py
+keyboard
+numpy
+plotly
+PyAutoGUI
+PyGetWindow
+pyperclip
+PyYAML
+Requests
+scheduler
+scipy
+selenium==4.18.1
+seleniumbase
