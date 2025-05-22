@@ -41,7 +41,7 @@ ERR_WAIT = 10
 # time (s) to wait when error encountered
 
 
-RESERVED_PROGRAM_FILES = ["id.txt"]
+RESERVED_PROGRAM_FILES = [ID_FILE]
 # reserved program files that cannot be changed by update manager
 
 
