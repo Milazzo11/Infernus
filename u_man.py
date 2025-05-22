@@ -4,12 +4,6 @@ INFERNUS x MIDPEM Update Manager.
 :author: Max Milazzo
 """
 
-## del later
-## PKI std file format:
-# first 4 bytes -- signifies length of following PKI-encrypted one-time symmetic key
-# next N bytes -- encrypted symmetric key
-# next M bytes -- encrypted data (using symmetric key)
-
 
 import pki
 import os

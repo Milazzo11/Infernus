@@ -154,6 +154,9 @@ async def deploy(ctx) -> tuple:
     with zipfile.ZipFile(DEPLOY_DIR + ".zip", "r") as zip_ref:
         zip_ref.extractall(DEPLOY_DIR)
         # extract attachment zip
+
+    pki.setup()
+    # reset assymetric key pair
     
     return unload()
     # unload deployment to project directory
