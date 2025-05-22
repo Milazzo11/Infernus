@@ -14,8 +14,9 @@ from process import kill_sig, start_sig
 from discord.ext import commands
 
 
-TOKEN = "TBD"
-# Discord bot interface token
+with open("token.txt", "r") as f:
+    TOKEN = f.read()
+    # Discord bot interface token
 
 
 CMD_PREFIX = "$"
