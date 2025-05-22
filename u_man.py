@@ -8,9 +8,11 @@ INFERNUS x MIDPEM Update Manager.
 import os
 import time
 import discord
+from crypto.asymmetric import AKE
 from update_api import deploy
 from update_api.transmit import transmit
 from process import kill_sig, start_sig
+from discord import SyncWebhook
 from discord.ext import commands
 
 
@@ -18,15 +20,16 @@ with open("token.txt", "r") as f:
     TOKEN = f.read()
     # Discord bot interface token
 
-
-CMD_PREFIX = "$"
-# command prefix
-
+with open("webhook.txt", "r") as f:
+    PKI_WEBHOOK = SyncWebhook.from_url(f.read())
+    # PKI post webhook
 
 with open(os.path.join(deploy.PROGRAM_DIR, deploy.ID_FILE)) as f:
     COMPUTER_ID = f.read()
     # get computer identification
 
+CMD_PREFIX = "$"
+# command prefix
 
 intents = discord.Intents.default()
 intents.message_content = True
