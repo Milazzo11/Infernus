@@ -5,6 +5,7 @@ MIDPEM Update Deployment Module.
 """
 
 
+import pki
 import os
 import time
 import shutil
@@ -144,8 +145,11 @@ async def deploy(ctx) -> tuple:
     """
     
     file = ctx.message.attachments[0]
-    await file.save(DEPLOY_DIR + ".zip")
+    await file.save(DEPLOY_DIR + ".enc")
     # save attachment zip
+
+    pki.decrypt(DEPLOY_DIR + ".enc")
+    # decrypts attachment zip (and saves it as .zip)
     
     with zipfile.ZipFile(DEPLOY_DIR + ".zip", "r") as zip_ref:
         zip_ref.extractall(DEPLOY_DIR)
