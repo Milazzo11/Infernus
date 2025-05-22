@@ -5,10 +5,10 @@ INFERNUS x MIDPEM Update Manager.
 """
 
 
+import pki
 import os
 import time
 import discord
-from crypto.asymmetric import AKE
 from update_api import deploy
 from update_api.transmit import transmit
 from process import kill_sig, start_sig
@@ -186,5 +186,6 @@ async def on_ready() -> None:
     print("U-MAN: [listener active]\n")
 
 
-if __name__ == "__main__":  
+if __name__ == "__main__":
+    pki.setup()
     client.run(TOKEN, log_handler=None)
