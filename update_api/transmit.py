@@ -6,9 +6,6 @@ MIDPEM Remote Controller Transmitter.
 """
 
 
-from discord import SyncWebhook
-
-
 async def transmit(ctx, msg: str, files: list = None, no_cmd: bool = False) -> None:
     """
     Manage response and transmit to remote controller.
@@ -35,14 +32,3 @@ async def transmit(ctx, msg: str, files: list = None, no_cmd: bool = False) -> N
     
     await ctx.reply(msg, files=files)
     # send resonse to server
-
-
-def wh_post(data: str, webhook: SyncWebhook) -> None:
-    """
-    Post data using webhook (required for public key posting).
-
-    :param data: data to post
-    :param webhook: Discord webhook
-    """
-
-    webhook.send(data)

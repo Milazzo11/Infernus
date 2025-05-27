@@ -5,12 +5,11 @@ MIDPEM Update Deployment Module.
 """
 
 
-import pki
 import os
-import time
 import shutil
+import time
 import zipfile
-import subprocess
+from crypto import pki
 
 
 PROGRAM_DIR = "program"
@@ -154,9 +153,6 @@ async def deploy(ctx) -> tuple:
     with zipfile.ZipFile(DEPLOY_DIR + ".zip", "r") as zip_ref:
         zip_ref.extractall(DEPLOY_DIR)
         # extract attachment zip
-
-    pki.setup()
-    # reset assymetric key pair
     
     return unload()
     # unload deployment to project directory
@@ -183,5 +179,4 @@ def rollback() -> tuple:
         
         return True, "%s: [*] ROLLBACK SUCCESS"
     else:
-        return True, "%s: [!] ROLLBACK UNAVAILABLE" 
-    
+        return True, "%s: [!] ROLLBACK UNAVAILABLE"

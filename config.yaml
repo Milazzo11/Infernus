@@ -1,0 +1,14 @@
+token: TOKEN_DATA
+# Discord bot token
+
+deploy_webhook: webhook_link
+# deployment webhook that remote update managers can receive commands from
+
+man_webhook: webhook_link
+# helper webhook to send commands to active MIDPEM bots
+
+pki_webhook: webhook_link
+# PKI post webhook
+
+deploy_cids: [A1, A2, A3, A4, A5, A6, A7, A8, A9, A10]
+# computer IDs to deploy secure updates for (using remote deployment utility)

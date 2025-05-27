@@ -5,16 +5,14 @@ Update Manager Process Handler.
 """
 
 
-import os
-import time
 import subprocess
+import time
 from update_api.deploy import PROGRAM_DIR, PROGRAM_RUN
+from util.config import CONFIG
 from discord import SyncWebhook
 
 
-DEPLOY_HELPER_WEBHOOK = SyncWebhook.from_url(
-    "https://discordapp.com/api/webhooks/1153815910939897897/V7YYNCN2rQNeVG3DcMfWXo5h-em0_lRcoYtYMrIwUVLd4MUbtqY5oyOhNSa6uX_Omki2"
-)
+DEPLOY_HELPER_WEBHOOK = SyncWebhook.from_url(CONFIG["man_webhook"])
 # deploy helper webhook to send commands to MIDPEM bots
 
 

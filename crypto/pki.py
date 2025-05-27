@@ -1,51 +1,78 @@
 """
+SMUM Public Key Infrastructure Module.
+
+:author: Max Milazzo
 """
 
 
+import base64
 import os
 from crypto.symmetric import SKE
 from crypto.asymmetric import AKE
+from util.config import CONFIG
+from discord import SyncWebhook
+from typing import Union
 
 
 KEY_DIR = "keys"
+# key storage directory
 
 
 PRIV_FILE = "priv.key"
+# private key storage file
 
 
 PUB_FILE = "pub.key"
+# public key storage file
 
 
-# Encrypted ZIP file format:
-# ==========================
-# first 4 bytes -- specifies length of following PKI-encrypted one-time symmetic key
-# next N bytes  -- encrypted symmetric key
-# next M bytes  -- encrypted data (using symmetric key)
+PKI_WEBHOOK = SyncWebhook.from_url(CONFIG["pki_webhook"])
+# PKI post webhook
 
 
-def setup():
+## Encrypted ZIP file format:
+## ==========================
+## first 4 bytes -- specifies length of following PKI-encrypted one-time symmetic key
+## next N bytes  -- encrypted symmetric key
+## next M bytes  -- encrypted data (using symmetric key)
+
+
+def setup(computer_id: str) -> None:
     """
+    Setup PKI keys and post public key to server.
+
+    :param computer_id: computer ID
     """
 
     pki_cipher = AKE()
 
     with open(os.path.join(KEY_DIR, PRIV_FILE), "wb") as f:
         f.write(pki_cipher.private_key)
-    
+
     with open(os.path.join(KEY_DIR, PUB_FILE), "wb") as f:
         f.write(pki_cipher.public_key)
-    
 
-def encrypt(zip_file, public_key = None):
+    PKI_WEBHOOK.send(
+        computer_id + " " +
+        base64.b64encode(pki_cipher.public_key).decode("utf-8")
+    )
+
+
+def encrypt(zip_file: str, public_key: Union[bytes, None] = None) -> None:
     """
+    Encrypt zip file using PKI.
+
+    :param zip_file: zip filename to encrypt
+    :param public_key: public key to use for encryption
     """
 
     if public_key is None:
         with open(os.path.join(KEY_DIR, PUB_FILE), "rb") as f:
             public_key = f.read()
+            # use a local public key by default for testing
 
     pki_cipher = AKE(public_key=public_key)
-    ske_cipher = SKE()
+    ske_cipher = SKE(iv=b"0" * 16)
 
     with open(zip_file, "rb") as f:
         plaintext_data = f.read()
@@ -61,10 +88,13 @@ def encrypt(zip_file, public_key = None):
         f.write(encrypted_sym_key)
         f.write(encrypted_data)
         # write data to encrypted zip file
-    
-    
-def decrypt(enc_file: str):
+
+
+def decrypt(enc_file: str) -> None:
     """
+    Decrypt zip file using PKI.
+
+    :param enc_file: encrypted zip filename to decrypt
     """
 
     with open(os.path.join(KEY_DIR, PRIV_FILE), "rb") as f:
@@ -95,8 +125,3 @@ def decrypt(enc_file: str):
     with open(zip_file, "wb") as f:
         f.write(plaintext_data)
         # write decrypted zip file
-
-
-#setup()
-#encrypt("test.zip")
-#decrypt("test.zip.enc")
