@@ -112,7 +112,7 @@ async def _rollback(ctx, device_id) -> None:
 
 
 @client.command(name="rollbackall", aliases=["rba"])
-async def _rollback(ctx) -> None:
+async def _rollback_all(ctx) -> None:
     """
     Universal rollback initiation command signal.
     
