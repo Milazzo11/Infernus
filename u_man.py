@@ -7,6 +7,7 @@ Secure (encrypted) MIDPEM Update Manager.
 
 import discord
 import os
+import shlex
 from crypto import pki
 from util.process import kill_sig, start_sig
 from update_api import deploy
@@ -160,6 +161,42 @@ async def _status_all(ctx, device_id=None) -> None:
     """
 
     await transmit(ctx, f"{COMPUTER_ID}: [i] ONLINE")
+
+
+@client.event
+async def on_message(message) -> None:
+    """
+    Directly handle messages to allow other bots and webhooks to interface with
+    the update manager and send their own commands.
+    
+    :param message: server message
+    :type message: Discord message object
+    """
+
+    if message.author == client.user:
+        return
+        # exit on current bot message read
+
+    if message.author.bot:
+    # allow webhook and bot commands to be processed
+    
+        command_text = shlex.split(message.content)
+        command = client.get_command(command_text[0].replace(CMD_PREFIX, ""))
+        ctx = await client.get_context(message)
+        # process input command and get context
+        
+        if len(command_text) == 1:
+            await command(ctx)
+            # process 0 argument command
+            
+        else:
+            await command(ctx, *command_text[1:])
+            # process 1+ argument command
+
+    else:
+        await client.process_commands(message)
+        # process user commands normally
+        # (this allows error detection and messaging to stay on)
 
 
 @client.event
