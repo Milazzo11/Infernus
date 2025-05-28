@@ -21,10 +21,6 @@ DEPLOY_WEBHOOK = SyncWebhook.from_url(CONFIG["deploy_webhook"])
 # deploy webhook that remote update managers can take commands from
 
 
-PKI_CHANNEL_ID = 123456789012345678
-# PKI post channel ID
-
-
 intents = discord.Intents.default()
 intents.message_content = True
 
@@ -42,7 +38,7 @@ async def on_ready() -> None:
     zip_file = input("> ")
     # get unencrypted zip file name to deploy
 
-    channel = client.get_channel(PKI_CHANNEL_ID)
+    channel = client.get_channel(CONFIG["pki_channel_id"])
 
     async for message in channel.history(limit=POST_LIMIT):
         try:
