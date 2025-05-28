@@ -119,9 +119,10 @@ def unload() -> tuple:
                 
             ):
                 return False, "%s: [!] UPDATE FAILED"
-            
+    
+    os.remove(DEPLOY_DIR + ".zip.enc")
     os.remove(DEPLOY_DIR + ".zip")
-    # clean up zipfile
+    # clean up encrypted and uncrypted zipfiles
     
     if not run_retry(
         lambda: shutil.rmtree(DEPLOY_DIR)
@@ -144,18 +145,21 @@ async def deploy(ctx) -> tuple:
     """
     
     file = ctx.message.attachments[0]
-    await file.save(DEPLOY_DIR + ".enc")
+    await file.save(DEPLOY_DIR + ".zip.enc")
     # save attachment zip
 
-    pki.decrypt(DEPLOY_DIR + ".enc")
+    pki.decrypt(DEPLOY_DIR + ".zip.enc")
     # decrypts attachment zip (and saves it as .zip)
     
-    with zipfile.ZipFile(DEPLOY_DIR + ".zip", "r") as zip_ref:
-        zip_ref.extractall(DEPLOY_DIR)
-        # extract attachment zip
-    
-    return unload()
-    # unload deployment to project directory
+    try:
+        with zipfile.ZipFile(DEPLOY_DIR + ".zip", "r") as zip_ref:
+            zip_ref.extractall(DEPLOY_DIR)
+            # extract attachment zip
+        
+        return unload()
+        # unload deployment to project directory
+    except Exception as e:
+        print(e)
     
     
 def rollback() -> tuple:

@@ -9,7 +9,7 @@ import base64
 import discord
 from crypto import pki
 from util.config import CONFIG
-from discord import SyncWebhook
+from discord import File, SyncWebhook
 from discord.ext import commands
 
 
@@ -21,11 +21,20 @@ DEPLOY_WEBHOOK = SyncWebhook.from_url(CONFIG["deploy_webhook"])
 # deploy webhook that remote update managers can take commands from
 
 
+DEPLOY_CIDS = [cid.lower() for cid in CONFIG["deploy_cids"]]
+# lowercase deploy computer IDs
+
+
+CMD_PREFIX = "$"
+# command prefix
+
+
 intents = discord.Intents.default()
 intents.message_content = True
 
-client = commands.Bot(intents=intents)
+client = commands.Bot(command_prefix=CMD_PREFIX, intents=intents)
 client.remove_command("help")
+# create and set up bot
 
 
 @client.event
@@ -48,13 +57,14 @@ async def on_ready() -> None:
         except:
             continue
 
-        if post_cid.lower() in CONFIG["deploy_cids"]:
+        if post_cid.lower() in DEPLOY_CIDS:
             public_key = base64.b64decode(public_key_b64)
             pki.encrypt(zip_file, public_key)
             # encrypt zip file using public key for matching device
 
             with open(zip_file + ".enc", "rb") as f:
-                DEPLOY_WEBHOOK.send(content="$update " + post_cid, file=f)
+                file = File(f, filename=zip_file + ".enc")
+                DEPLOY_WEBHOOK.send(content="$update " + post_cid, file=file)
                 # deploy update
 
             await message.delete()
