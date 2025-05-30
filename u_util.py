@@ -69,6 +69,9 @@ async def on_ready() -> None:
 
             await message.delete()
             # delete PKI post
+    
+    await client.close()
+    # end program
 
 
 if __name__ == "__main__":
