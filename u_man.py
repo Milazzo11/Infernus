@@ -14,6 +14,7 @@ from update_api import deploy
 from update_api.transmit import transmit
 from util.config import CONFIG
 from discord.ext import commands
+from typing import Union
 
 
 with open(os.path.join(deploy.PROGRAM_DIR, deploy.ID_FILE)) as f:
@@ -34,21 +35,28 @@ client.remove_command("help")
 
 
 @client.command(name="update", aliases=["up"])
-async def _update(ctx, device_id) -> None:
+async def _update(ctx, device_id: str, raw: Union[str, None] = None) -> None:
     """
     Device-specific update initiation command signal.
     
     :param ctx: command context
     :type ctx: Discord context object
     :param device_id: command execution device identifier
+    :param raw: raw update flag -- kill and restart system if not present,
+        otherwise perform a simple file inclusion/replacement with no restart
+        or rollback directory creation (can be dangerous if improperly used)
     """
 
     if device_id.lower() == COMPUTER_ID.lower():
         await transmit(ctx, f"{COMPUTER_ID}: [i] UPDATE SIGNAL RECEIVED")
-        kill_sig(COMPUTER_ID)
-        # stop current process on update signal receipt
+        
+        kill = raw is None
+        
+        if kill:
+            kill_sig(COMPUTER_ID)
+            # stop current process on update signal receipt
 
-        success, res = await deploy.deploy(ctx)
+        success, res = await deploy.deploy(ctx, rollback=kill)
         # deploy update
 
         pki.setup(COMPUTER_ID)
@@ -88,7 +96,7 @@ async def _update_all(ctx) -> None:
 
 
 @client.command(name="rollback", aliases=["rb"])
-async def _rollback(ctx, device_id) -> None:
+async def _rollback(ctx, device_id: Union[str, None]) -> None:
     """
     Device-specific rollback initiation command signal.
     
@@ -137,7 +145,7 @@ async def _rollback_all(ctx) -> None:
 
 
 @client.command(name="status", aliases=["ss"])
-async def _status(ctx, device_id=None) -> None:
+async def _status(ctx, device_id: Union[str, None] = None) -> None:
     """
     Device-specific AND Universal status query signal.
     
@@ -151,13 +159,12 @@ async def _status(ctx, device_id=None) -> None:
 
 
 @client.command(name="statusall", aliases=["ssa"])
-async def _status_all(ctx, device_id=None) -> None:
+async def _status_all(ctx) -> None:
     """
     Universal status query signal.
     
     :param ctx: command context
     :type ctx: Discord context object
-    :param device_id: command execution device identifier
     """
 
     await transmit(ctx, f"{COMPUTER_ID}: [i] ONLINE")

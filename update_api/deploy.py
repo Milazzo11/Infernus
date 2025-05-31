@@ -76,19 +76,21 @@ def run_retry(func: callable, err_max: int = ERR_MAX, err_wait: int = ERR_WAIT) 
             time.sleep(err_wait)
 
 
-def unload() -> tuple:
+def unload(rollback: bool) -> tuple:
     """
     Unload deployment data to active program file.
     
+    :param rollback: flag specifying whether rollback should be created 
     :return success status, response message
     """
     
-    if os.path.exists(ROLLBACK_DIR):
-        shutil.rmtree(ROLLBACK_DIR)
-        # delete past rollback directory
-        
-    shutil.copytree(PROGRAM_DIR, ROLLBACK_DIR)
-    # create new rolback directory
+    if rollback:
+        if os.path.exists(ROLLBACK_DIR):
+            shutil.rmtree(ROLLBACK_DIR)
+            # delete past rollback directory
+            
+        shutil.copytree(PROGRAM_DIR, ROLLBACK_DIR)
+        # create new rollback directory
     
     for unload_root, dirs, files in os.walk(DEPLOY_DIR):
         program_root = os.path.join(
@@ -134,13 +136,13 @@ def unload() -> tuple:
     return True, "%s: [*] UPDATE SUCCESS"
 
 
-async def deploy(ctx) -> tuple:
+async def deploy(ctx, rollback: bool) -> tuple:
     """
     Deploy new update.
     
     :param ctx: command context
     :type ctx: Discord context object
-    
+    :param rollback: flag specifying whether rollback should be created   
     :return success status, response message
     """
     
@@ -156,8 +158,9 @@ async def deploy(ctx) -> tuple:
             zip_ref.extractall(DEPLOY_DIR)
             # extract attachment zip
         
-        return unload()
+        return unload(rollback)
         # unload deployment to project directory
+        
     except Exception as e:
         print(e)
     
