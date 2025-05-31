@@ -52,7 +52,7 @@ async def _update(ctx, device_id: str, raw: str = "-", reset_pki: str = "-") -> 
     if device_id.lower() == COMPUTER_ID.lower():
         await transmit(ctx, f"{COMPUTER_ID}: [i] UPDATE SIGNAL RECEIVED")
         
-        kill = (raw.lower() == "raw")
+        kill = (raw.lower() != "raw")
         pki_reset = (reset_pki.lower() != "noreset")
         
         if kill:
