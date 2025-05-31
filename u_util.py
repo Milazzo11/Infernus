@@ -56,7 +56,8 @@ async def on_ready() -> None:
         
         except:
             continue
-
+        
+        ## DISCARD NOT MOST RECENT CID POST IF EXISTS (AND DELETE IT)
         if post_cid.lower() in DEPLOY_CIDS:
             public_key = base64.b64decode(public_key_b64)
             pki.encrypt(zip_file, public_key)
