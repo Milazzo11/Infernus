@@ -7,8 +7,8 @@ SMUM Public Key Infrastructure Module.
 
 import base64
 import os
-from crypto.symmetric import SKE
-from crypto.asymmetric import AKE
+from crypto.base.symmetric import SKE
+from crypto.base.asymmetric import AKE
 from util.config import CONFIG
 from discord import SyncWebhook
 from typing import Union

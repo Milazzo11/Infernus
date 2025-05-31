@@ -62,9 +62,9 @@ async def _update(ctx, device_id: str, raw: Union[str, None] = None) -> None:
         pki.setup(COMPUTER_ID)
         # reset assymetric key pair
 
-        if success:
+        if kill and success:
             start_sig()
-            # start new process if update successful
+            # start new process if update successful (and previously killed)
 
         await transmit(ctx, res % COMPUTER_ID)
 

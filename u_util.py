@@ -14,12 +14,12 @@ from discord import File, SyncWebhook
 from discord.ext import commands
 
 
-POST_LIMIT = 100
+POST_LIMIT = 300
 # maximum number of PKI posts that can be read
 
 
 RAW = False
-# raw (non-restart) deployment [raw or nah]
+# raw (non-restart) deployment
 
 
 DEPLOY_WEBHOOK = SyncWebhook.from_url(CONFIG["deploy_webhook"])
