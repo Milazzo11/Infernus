@@ -7,6 +7,7 @@ Remote deployment utility.
 
 import base64
 import discord
+import os
 from crypto import pki
 from util.config import CONFIG
 from discord import File, SyncWebhook
@@ -15,6 +16,10 @@ from discord.ext import commands
 
 POST_LIMIT = 100
 # maximum number of PKI posts that can be read
+
+
+RAW = False
+# raw (non-restart) deployment [raw or nah]
 
 
 DEPLOY_WEBHOOK = SyncWebhook.from_url(CONFIG["deploy_webhook"])
@@ -46,8 +51,14 @@ async def on_ready() -> None:
     print("Enter zip file name:")
     zip_file = input("> ")
     # get unencrypted zip file name to deploy
+    
+    raw_str = ""
+    
+    if RAW:
+        raw_str = " raw"
 
     channel = client.get_channel(CONFIG["pki_channel_id"])
+    seen_cids = set()
 
     async for message in channel.history(limit=POST_LIMIT):
         try:
@@ -57,19 +68,21 @@ async def on_ready() -> None:
         except:
             continue
         
-        ## DISCARD NOT MOST RECENT CID POST IF EXISTS (AND DELETE IT)
-        if post_cid.lower() in DEPLOY_CIDS:
+        if post_cid.lower() in DEPLOY_CIDS and post_cid.lower() not in seen_cids:
             public_key = base64.b64decode(public_key_b64)
             pki.encrypt(zip_file, public_key)
             # encrypt zip file using public key for matching device
 
             with open(zip_file + ".enc", "rb") as f:
                 file = File(f, filename=zip_file + ".enc")
-                DEPLOY_WEBHOOK.send(content="$update " + post_cid, file=file)
+                DEPLOY_WEBHOOK.send(content="$update " + post_cid + raw_str, file=file)
                 # deploy update
+                
+            os.remove(zip_file + ".enc")
+            seen_cids.add(post_cid.lower())
 
-            await message.delete()
-            # delete PKI post
+        await message.delete()
+        # delete PKI post
     
     await client.close()
     # end program
