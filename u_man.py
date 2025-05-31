@@ -35,22 +35,25 @@ client.remove_command("help")
 
 
 @client.command(name="update", aliases=["up"])
-async def _update(ctx, device_id: str, raw: Union[str, None] = None) -> None:
+async def _update(ctx, device_id: str, raw: str = "-", reset_pki: str = "-") -> None:
     """
     Device-specific update initiation command signal.
     
     :param ctx: command context
     :type ctx: Discord context object
     :param device_id: command execution device identifier
-    :param raw: raw update flag -- kill and restart system if not present,
+    :param raw: "raw" update flag -- kill and restart system if not present,
         otherwise perform a simple file inclusion/replacement with no restart
         or rollback directory creation (can be dangerous if improperly used)
+    :param reset_pki: "noreset" PKI reset disable flag -- reset PKI keys and
+        post as normal if not present, otherwise do not reset keys 
     """
 
     if device_id.lower() == COMPUTER_ID.lower():
         await transmit(ctx, f"{COMPUTER_ID}: [i] UPDATE SIGNAL RECEIVED")
         
-        kill = raw is None
+        kill = (raw.lower() == "raw")
+        pki_reset = (reset_pki.lower() != "noreset")
         
         if kill:
             kill_sig(COMPUTER_ID)
@@ -58,9 +61,10 @@ async def _update(ctx, device_id: str, raw: Union[str, None] = None) -> None:
 
         success, res = await deploy.deploy(ctx, rollback=kill)
         # deploy update
-
-        pki.setup(COMPUTER_ID)
-        # reset assymetric key pair
+        
+        if pki_reset:
+            pki.setup(COMPUTER_ID)
+            # reset assymetric key pair
 
         if kill and success:
             start_sig()
@@ -96,7 +100,7 @@ async def _update_all(ctx) -> None:
 
 
 @client.command(name="rollback", aliases=["rb"])
-async def _rollback(ctx, device_id: Union[str, None]) -> None:
+async def _rollback(ctx, device_id: str) -> None:
     """
     Device-specific rollback initiation command signal.
     

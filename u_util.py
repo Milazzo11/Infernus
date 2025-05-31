@@ -75,7 +75,7 @@ async def on_ready() -> None:
 
             with open(zip_file + ".enc", "rb") as f:
                 file = File(f, filename=zip_file + ".enc")
-                DEPLOY_WEBHOOK.send(content="$update " + post_cid + raw_str, file=file)
+                DEPLOY_WEBHOOK.send(content="$update " + post_cid.upper() + raw_str, file=file)
                 # deploy update
                 
             os.remove(zip_file + ".enc")
