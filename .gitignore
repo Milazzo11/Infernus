@@ -1,1 +1,4 @@
 config.yaml
+pub.key
+priv.key
+id.txt
