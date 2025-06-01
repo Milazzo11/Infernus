@@ -26,7 +26,7 @@ DEPLOY_WEBHOOK = SyncWebhook.from_url(CONFIG["deploy_webhook"])
 # deploy webhook that remote update managers can take commands from
 
 
-DEPLOY_CIDS = [cid.lower() for cid in CONFIG["deploy_cids"]]
+DEPLOY_CIDS = [cid.lower() for cid in CONFIG["active_cids"]]
 # lowercase deploy computer IDs
 
 
