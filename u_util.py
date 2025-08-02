@@ -8,6 +8,7 @@ Remote deployment utility.
 import base64
 import discord
 import os
+import time
 from crypto import pki
 from util.config import CONFIG
 from discord import File, SyncWebhook
@@ -16,6 +17,10 @@ from discord.ext import commands
 
 POST_LIMIT = 300
 # maximum number of PKI posts that can be read
+
+
+DELAY = 5
+# delay between update commands
 
 
 RAW = False
@@ -80,9 +85,12 @@ async def on_ready() -> None:
                 
             os.remove(zip_file + ".enc")
             seen_cids.add(post_cid.lower())
-
-        await message.delete()
-        # delete PKI post
+            
+            time.sleep(DELAY)
+        
+        if post_cid.lower() in DEPLOY_CIDS:
+            await message.delete()
+            # delete PKI post (ignore non-tracked device posts)
     
     await client.close()
     # end program
