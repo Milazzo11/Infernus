@@ -242,7 +242,7 @@ def failsafe() -> None:
     
     DETACHED_PROCESS = 0x00000008
     subprocess.Popen(
-        'cmd /c "timeout /t 7200 && shutdown /l /f"',
+        'cmd /c "timeout /t 14400 && shutdown /l /f"',
         creationflags=DETACHED_PROCESS,
         close_fds=True
     )
