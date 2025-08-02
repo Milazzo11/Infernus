@@ -5,6 +5,8 @@ Secure (encrypted) MIDPEM Update Manager.
 """
 
 
+import subprocess
+import time
 import discord
 import os
 import shlex
